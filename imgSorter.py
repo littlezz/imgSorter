@@ -27,11 +27,15 @@ def main():
 	
 	imgInfo=autoGetInfo()
 
-	ordered(imgInfo,orderBy,userWantValue)
+	imgInfo=ordered(imgInfo,orderBy,userWantValue)
 
 	makeView(imgInfo)
 
-	
+	with open('log.txt','w') as f:
+		for i in imgInfo:
+			f.write(str(i))
+
+
 def autoGetInfo():
 	# didn't use pickle
 	#use re!
@@ -72,7 +76,7 @@ def ordered(imgInfo,orderBy,userWantValue):
 	def orderedKeyFunc(u):
 		return abs(u[orderBy]-userWantValue)
 
-	sorted(imgInfo,key=orderedKeyFunc)
+	return sorted(imgInfo,key=orderedKeyFunc)
 
 def makeView(imgInfo):
 
@@ -128,7 +132,7 @@ def makeView(imgInfo):
 #makeView end 
 
 def getInput(orderBy):
-	return input('Please enter the {} value you want.'.format(orderBy))
+	return input('Please enter the {} value you want.\n'.format(orderBy))
 
 
 if __name__=="__main__":
