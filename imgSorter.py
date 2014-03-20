@@ -1,13 +1,33 @@
-import os,operator,re
+import os,operator,re,random
 from PIL import Image
 
-supportOrderBy=("proportion","width","height")
+supportOrderBy=("proportion","width","height","random")
+
+
+class programInfo():
+	"""print info of program running"""
+	def __init__(self):
+		self.count=0
+		self.info=[
+				"There is total {} files",
+				"sorting",
+				"making html.",
+				"done! with {} mode"
+				]
+	def printOut(self,info=None):
+		print(self.info[self.count].format(info))
+		self.count +=1
 
 def main():
 	path=".."
 	os.chdir(path)
 	orderBy="proportion"
 	while True:
+
+		if isRandomMode(orderBy):
+			userWantValue=None
+			break
+
 		userInput=getInput(orderBy)
 		if userInput:
 			if userInput[0]=="#":
@@ -24,16 +44,19 @@ def main():
 					break;
 
 
-	
-	imgInfo=autoGetInfo()
+	putOutInfo=programInfo()
 
+	imgInfo=autoGetInfo()
+	putOutInfo.printOut(len(imgInfo))
+
+	putOutInfo.printOut()
 	imgInfo=ordered(imgInfo,orderBy,userWantValue)
 
+	putOutInfo.printOut()
 	makeView(imgInfo)
 
-	with open('log.txt','w') as f:
-		for i in imgInfo:
-			f.write(str(i))
+	putOutInfo.printOut(orderBy)
+
 
 
 def autoGetInfo():
@@ -64,9 +87,10 @@ def autoGetInfo():
 			matchRule=None
 
 	
-		for i in os.listdir():
-			if (not matchRule) or (re.match(matchRule,i)):
-				addInfo(i,imgInfo)
+	for i in os.listdir():
+		if (not matchRule) or (re.match(matchRule,i)):
+			addInfo(i,imgInfo)
+
 	return imgInfo
 	
 
@@ -76,7 +100,16 @@ def ordered(imgInfo,orderBy,userWantValue):
 	def orderedKeyFunc(u):
 		return abs(u[orderBy]-userWantValue)
 
-	return sorted(imgInfo,key=orderedKeyFunc)
+	def runRandomSort(imgInfo):
+		tmpList=[]
+		for i in imgInfo:
+			tmpList.append(random.choice(imgInfo))
+		return tmpList
+
+	if orderBy=="random":
+		return runRandomSort(imgInfo)
+	else:
+		return sorted(imgInfo,key=orderedKeyFunc)
 
 def makeView(imgInfo):
 
@@ -132,8 +165,15 @@ def makeView(imgInfo):
 #makeView end 
 
 def getInput(orderBy):
-	return input('Please enter the {} value you want.\n'.format(orderBy))
+	 print('Please enter the {} value you want.(number!)'.format(orderBy))
+	 print("such as 1.7 (16:9)")
+	 return input()
 
+def isRandomMode(orderBy):
+	if orderBy=="random":
+		return True
+	else :
+		return False
 
 if __name__=="__main__":
 	main()
