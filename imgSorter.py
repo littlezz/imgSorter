@@ -3,6 +3,11 @@ from PIL import Image
 
 supportOrderBy=("proportion","width","height","random")
 
+part_html_path=os.path.join(os.getcwd(),"date","html","")
+print(part_html_path)
+css_path=os.path.join(os.getcwd(),"date","css","")
+
+divNumber=50
 
 class programInfo():
 	"""print info of program running"""
@@ -19,6 +24,8 @@ class programInfo():
 		self.count +=1
 
 def main():
+	if os.path.exists(part_html_path)==False:
+		os.mkdir(part_html_path)
 	path=".."
 	os.chdir(path)
 	orderBy="proportion"
@@ -53,11 +60,30 @@ def main():
 	imgInfo=ordered(imgInfo,orderBy,userWantValue)
 
 	putOutInfo.printOut()
-	makeView(imgInfo)
+
+
+	#makeView(imgInfo)
+	#make div html,50 pictures in a part_html
+	header,tempOne,tempTwo,tempLink=openCssFloderFile('header.html','tempOne.html','tempTwo.html','tempLink.html')
+	
+	for i in range(int(len(imgInfo)/divNumber)+1):
+		makeView(imgInfo[i*divNumber:(i+1)*divNumber],i,part_html_path,tempOne,tempTwo,header,tempLink)
 
 	putOutInfo.printOut(orderBy)
+	makeLinkToHtmlPart()
+	
 
+def makeLinkToHtmlPart():
+	
+	viewOneHtmlGoalPath=os.path.join(part_html_path,"viewOne_part0.html")
+	viewTwoHtmlGoalPath=os.path.join(part_html_path,"viewTwo_part0.html")
+	
+	if not os.path.exists("viewOne.html"):
+		os.symlink(viewOneHtmlGoalPath,"viewOne.html")
 
+	if not os.path.exists("viewTwo.html"):
+		os.symlink(viewTwoHtmlGoalPath,"viewTwo.html")
+	
 
 def autoGetInfo():
 	# didn't use pickle
@@ -67,14 +93,14 @@ def autoGetInfo():
 	def addInfo(filename,imgInfo):
 		#check isdir
 		if os.path.isdir(filename): return
-
+		pwd=os.getcwd()
 		try:
 			im=Image.open(filename)
 		except IOError:
 			print("Can not load {}".format(filename))
 		else:
 			width,height=im.size
-			tmp={'name':filename,'width':width,'height':height,'proportion':width/height}
+			tmp={'name':os.path.join(pwd,filename),'width':width,'height':height,'proportion':width/height}
 			imgInfo.append(tmp)	
 
 
@@ -101,35 +127,28 @@ def ordered(imgInfo,orderBy,userWantValue):
 		return abs(u[orderBy]-userWantValue)
 
 	def runRandomSort(imgInfo):
-		tmpList=[]
-		for i in imgInfo:
-			tmpList.append(random.choice(imgInfo))
-		return tmpList
+		tmpList=imgInfo[:]
+		
+		return random.shuffle(tmpList)
 
 	if orderBy=="random":
 		return runRandomSort(imgInfo)
 	else:
 		return sorted(imgInfo,key=orderedKeyFunc)
 
-def makeView(imgInfo):
-
-	def openCssFloderFile(*arg):
-		rt=[]
-		for i in arg:
-			with open('./imgSorter/date/temp/'+i,'r',encoding="utf-8") as f:
-				rt.append(f.read())
-		return rt
-
-
-
-	header,tempOne,tempTwo=openCssFloderFile('header.html','tempOne.html','tempTwo.html')
+def makeView(imgInfo,part,directory,tempOne,tempTwo,header,tempLink):
 
 	
-	with open('viewOne.html','w',encoding="utf-8")as viewOne,open('viewTwo.html','w',encoding="utf-8") as viewTwo:
+
+
+	if imgInfo==None: return
+
+	
+	with open(directory+'viewOne_part{}.html'.format(part),'w',encoding="utf-8")as viewOne,open(directory+'viewTwo_part{}.html'.format(part),'w',encoding="utf-8") as viewTwo:
 
 		#write header
-		viewOne.write(header.format('imgSorter_One','one.css'))
-		viewTwo.write(header.format('imgSorter_Two','two.css'))
+		viewOne.write(header.format('imgSorter_One',css_path+'one.css'))
+		viewTwo.write(header.format('imgSorter_Two',css_path+'two.css'))
 
 		for i in range(len(imgInfo)):
 			#write viewOne
@@ -162,7 +181,19 @@ def makeView(imgInfo):
 											)
 					)
 
+	
+		#write prev_next link  /body /html 
+		for i,name in ((viewOne,"viewOne"),(viewTwo,"viewTwo")):
+			if part==0:
+				i.write(tempLink.format(name,part,name,part+1))
+			else: 
+				i.write(tempLink.format(name,part-1,name,part+1))
+			i.write("</body></html>")
+
 #makeView end 
+
+
+
 
 def getInput(orderBy):
 	 print('Please enter the {} value you want.(number!)'.format(orderBy))
@@ -174,6 +205,13 @@ def isRandomMode(orderBy):
 		return True
 	else :
 		return False
+
+def openCssFloderFile(*arg):
+		rt=[]
+		for i in arg:
+			with open('./imgSorter/date/temp/'+i,'r',encoding="utf-8") as f:
+				rt.append(f.read())
+		return rt
 
 if __name__=="__main__":
 	main()

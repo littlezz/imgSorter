@@ -30,4 +30,6 @@ img{
 	-webkit-box-shadow:2px 2px 5px #333333; 
 	box-shadow:2px 2px 5px #333333;
 }
-a{color: transparent;}
+a.mark{color: transparent;}
+a#prev{float:left;}
+a#next{float:right;}

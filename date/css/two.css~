@@ -41,5 +41,5 @@ img{
 	box-shadow:2px 2px 5px #333333;
 }
 
-a{color: transparent;}
+a.mark{color: transparent;}
 p{margin:auto;}

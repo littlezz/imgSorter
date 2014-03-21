@@ -1,33 +1,23 @@
-/* two */
+/* one */
 
 body{
-	width: 90%;
+	width: 810px;
 	margin: auto;
 	background-color: rgba(128,128,128,0.3);
 
 }
-
 div#row{
 	width: 100%;
-	height: 355px;
-}
-div#left{
-	width: 46%;
-	float: left;
-	text-align: center;
-	vertical-align: middle;
-}
-div#right{
-	width: 46%;
-	float: right;
+	height: 460px;
 	text-align: center;
 	vertical-align: middle;
 }
 div#spaceBlank{
-	height: 45px;
+	height: 60px;
 	width: 100%;
 	
-	
+
+
 }
 img{
 	max-width: 100%;
@@ -40,9 +30,4 @@ img{
 	-webkit-box-shadow:2px 2px 5px #333333; 
 	box-shadow:2px 2px 5px #333333;
 }
-
 a.mark{color: transparent;}
-p{margin:auto;}
-
-a#prev{float:left;}
-a#next{float:right;}
