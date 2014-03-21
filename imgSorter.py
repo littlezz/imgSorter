@@ -128,8 +128,8 @@ def ordered(imgInfo,orderBy,userWantValue):
 
 	def runRandomSort(imgInfo):
 		tmpList=imgInfo[:]
-		
-		return random.shuffle(tmpList)
+		random.shuffle(tmpList)
+		return tmpList
 
 	if orderBy=="random":
 		return runRandomSort(imgInfo)
