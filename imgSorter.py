@@ -1,10 +1,10 @@
+#by zz
+
 import os,operator,re,random
 from PIL import Image
 
 supportOrderBy=("proportion","width","height","random")
-
 part_html_path=os.path.join(os.getcwd(),"date","html","")
-print(part_html_path)
 css_path=os.path.join(os.getcwd(),"date","css","")
 
 divNumber=50
@@ -13,15 +13,24 @@ class programInfo():
 	"""print info of program running"""
 	def __init__(self):
 		self.count=0
+		self.importFilesCount=0
 		self.info=[
-				"There is total {} files",
+				"There is total {} image files",
 				"sorting",
 				"making html.",
 				"done! with {} mode"
 				]
+
 	def printOut(self,info=None):
 		print(self.info[self.count].format(info))
 		self.count +=1
+
+	def printImportFiles(self,tempFormat):
+		print(tempFormat.format(self.importFilesCount),end="\r")
+		self.importFilesCount +=1
+
+putOutInfo=programInfo()
+
 
 def main():
 	if os.path.exists(part_html_path)==False:
@@ -51,7 +60,7 @@ def main():
 					break;
 
 
-	putOutInfo=programInfo()
+	
 
 	imgInfo=autoGetInfo()
 	putOutInfo.printOut(len(imgInfo))
@@ -70,26 +79,40 @@ def main():
 		makeView(imgInfo[i*divNumber:(i+1)*divNumber],i,part_html_path,tempOne,tempTwo,header,tempLink)
 
 	putOutInfo.printOut(orderBy)
-	makeLinkToHtmlPart()
+	
+	makeCopyFromHtmlPart()
+
+	input("Press Enter to exit")
+
 	
 
-def makeLinkToHtmlPart():
 	
+def makeCopyFromHtmlPart():
+	"""symlink or link do not work on Windows!
+		I hate Windows!
+
+	"""
+	def copyToCurrentDir(goal,currentName):
+		with open(goal,'rb') as tmp:
+			content=tmp.read()
+			with open(currentName,'wb')as f:
+				f.write(content)
+				
+
+
 	viewOneHtmlGoalPath=os.path.join(part_html_path,"viewOne_part0.html")
 	viewTwoHtmlGoalPath=os.path.join(part_html_path,"viewTwo_part0.html")
 	
-	if not os.path.exists("viewOne.html"):
-		os.symlink(viewOneHtmlGoalPath,"viewOne.html")
+	copyToCurrentDir(viewOneHtmlGoalPath,"viewOne.html")
+	copyToCurrentDir(viewTwoHtmlGoalPath,"viewTwo.html")
 
-	if not os.path.exists("viewTwo.html"):
-		os.symlink(viewTwoHtmlGoalPath,"viewTwo.html")
 	
+
 
 def autoGetInfo():
 	# didn't use pickle
 	#use re!
 	
-
 	def addInfo(filename,imgInfo):
 		#check isdir
 		if os.path.isdir(filename): return
@@ -112,10 +135,19 @@ def autoGetInfo():
 		else:
 			matchRule=None
 
-	
-	for i in os.listdir():
-		if (not matchRule) or (re.match(matchRule,i)):
+	if not matchRule:
+		for i in os.listdir():
+			putOutInfo.printImportFiles("import  {} files ")
 			addInfo(i,imgInfo)
+	else:
+		for i in os.listdir():
+			if (re.match(matchRule,i)):
+				putOutInfo.printImportFiles("import  {} files ")
+				addInfo(i,imgInfo)
+		
+
+	#print next line
+	print()
 
 	return imgInfo
 	
@@ -139,11 +171,8 @@ def ordered(imgInfo,orderBy,userWantValue):
 def makeView(imgInfo,part,directory,tempOne,tempTwo,header,tempLink):
 
 	
-
-
 	if imgInfo==None: return
 
-	
 	with open(directory+'viewOne_part{}.html'.format(part),'w',encoding="utf-8")as viewOne,open(directory+'viewTwo_part{}.html'.format(part),'w',encoding="utf-8") as viewTwo:
 
 		#write header
@@ -185,9 +214,9 @@ def makeView(imgInfo,part,directory,tempOne,tempTwo,header,tempLink):
 		#write prev_next link  /body /html 
 		for i,name in ((viewOne,"viewOne"),(viewTwo,"viewTwo")):
 			if part==0:
-				i.write(tempLink.format(name,part,name,part+1))
+				i.write(tempLink.format(os.path.join(part_html_path,name),part,os.path.join(part_html_path,name),part+1))
 			else: 
-				i.write(tempLink.format(name,part-1,name,part+1))
+				i.write(tempLink.format(os.path.join(part_html_path,name),part-1,os.path.join(part_html_path,name),part+1))
 			i.write("</body></html>")
 
 #makeView end 
