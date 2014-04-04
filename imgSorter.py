@@ -1,4 +1,9 @@
+#!/usr/bin/python3
+
+
+#
 #by zz
+#
 
 import os,operator,re,random
 from PIL import Image
