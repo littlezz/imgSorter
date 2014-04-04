@@ -1,0 +1,2 @@
+<a href="{}_part{}.html" id="prev"> Prev </a>
+<a href="{}_part{}.html" id="next" >Next</a>
