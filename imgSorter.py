@@ -218,14 +218,7 @@ def makeView(imgInfo,part,isEnd,directory,tempOne,tempTwo,header,tempLink):
 
 	
 		#write prev&&next link  /body /html 
-		"""
-		for i,name in ((viewOne,"viewOne"),(viewTwo,"viewTwo")):
-			if part==0:
-				i.write(tempLink.format(os.path.join(part_html_path,name),part,os.path.join(part_html_path,name),part+1))
-			else: 
-				i.write(tempLink.format(os.path.join(part_html_path,name),part-1,os.path.join(part_html_path,name),part+1))
-			i.write("</body></html>")
-		"""
+		
 		prevLink=slice(0,3)
 		nextLink=slice(3,6)
 		emptyLink=['']*2+['(None!)']
